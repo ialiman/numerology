@@ -1,13 +1,12 @@
-def calculate_soul_urge(full_name):
+def calculate_name_numerology(full_name):
     """
-    Calculate the Soul Urge (Heart's Desire) number from a full name.
-    Uses only the vowels in the name.
+    Calculate all name-based numerology numbers.
     
     Args:
         full_name (str): Full birth name (first, middle, last)
         
     Returns:
-        tuple: (final_number, calculation_details)
+        dict: Dictionary containing all calculated numbers and their details
     """
     
     # Pythagorean numerology chart
@@ -17,26 +16,34 @@ def calculate_soul_urge(full_name):
         'S': 1, 'T': 2, 'U': 3, 'V': 4, 'W': 5, 'X': 6, 'Y': 7, 'Z': 8
     }
     
-    # Define vowels (Y is handled specially)
+    # Define vowels
     vowels = ['A', 'E', 'I', 'O', 'U']
     
     def is_vowel(char, word, index):
-        """
-        Determine if a character is a vowel.
-        Y is considered a vowel when it sounds like a vowel.
-        """
+        """Determine if a character is a vowel."""
         char = char.upper()
         if char in vowels:
             return True
         # Y is a vowel if it's not preceded by another vowel
-        # Simple rule: Y is vowel if previous char is not a vowel
         if char == 'Y':
-            if index == 0:  # Y at beginning acts as consonant
+            if index == 0:
                 return False
             prev_char = word[index - 1].upper()
-            # Y is vowel if previous letter is a consonant
             return prev_char not in vowels
         return False
+    
+    def is_consonant(char, word, index):
+        """Determine if a character is a consonant."""
+        char = char.upper()
+        if char in vowels:
+            return False
+        # Y is a consonant if it's at the beginning or preceded by a vowel
+        if char == 'Y':
+            if index == 0:
+                return True
+            prev_char = word[index - 1].upper()
+            return prev_char in vowels
+        return True
     
     def reduce_to_single_digit(number):
         """Reduce a number to single digit or master number (11, 22, 33)."""
@@ -44,97 +51,201 @@ def calculate_soul_urge(full_name):
             number = sum(int(digit) for digit in str(number))
         return number
     
-    # Split name into parts
-    name_parts = full_name.strip().split()
-    
-    if not name_parts:
-        return 0, "Invalid name provided"
-    
-    # Calculate for each name part
-    reduced_name_totals = []
-    details = []
-    
-    for name in name_parts:
-        vowel_sum = 0
-        vowel_letters = []
+    def calculate_soul_urge():
+        """Calculate Soul Urge number from vowels."""
+        name_parts = full_name.strip().split()
+        reduced_name_totals = []
+        details = []
         
-        for i, char in enumerate(name):
-            if char.isalpha() and is_vowel(char, name, i):
-                value = letter_values[char.upper()]
-                vowel_sum += value
-                vowel_letters.append(f"{char.upper()}={value}")
+        for name in name_parts:
+            vowel_sum = 0
+            vowel_letters = []
+            
+            for i, char in enumerate(name):
+                if char.isalpha() and is_vowel(char, name, i):
+                    value = letter_values[char.upper()]
+                    vowel_sum += value
+                    vowel_letters.append(f"{char.upper()}={value}")
+            
+            if vowel_letters:
+                calculation_str = f"{name}: {' + '.join(vowel_letters)} = {vowel_sum}"
+                reduced_value = reduce_to_single_digit(vowel_sum)
+                
+                if reduced_value != vowel_sum:
+                    calculation_str += f" => {reduced_value}"
+                
+                details.append(calculation_str)
+                reduced_name_totals.append(reduced_value)
+            else:
+                details.append(f"{name}: No vowels")
         
-        if vowel_letters:
-            # Show the calculation for this name
-            calculation_str = f"{name}: {' + '.join(vowel_letters)} = {vowel_sum}"
+        total = sum(reduced_name_totals)
+        details.append(f"\nTotal: {' + '.join(map(str, reduced_name_totals))} = {total}")
+        
+        final_number = reduce_to_single_digit(total)
+        
+        if final_number != total:
+            details.append(f"Final Reduction: {total} => {final_number}")
+        
+        return final_number, "\n".join(details)
+    
+    def calculate_personality():
+        """Calculate Personality number from consonants."""
+        name_parts = full_name.strip().split()
+        reduced_name_totals = []
+        details = []
+        
+        for name in name_parts:
+            consonant_sum = 0
+            consonant_letters = []
             
-            # Reduce this name's total to single digit or master number
-            reduced_value = reduce_to_single_digit(vowel_sum)
+            for i, char in enumerate(name):
+                if char.isalpha() and is_consonant(char, name, i):
+                    value = letter_values[char.upper()]
+                    consonant_sum += value
+                    consonant_letters.append(f"{char.upper()}={value}")
             
-            # Show reduction if it occurred
-            if reduced_value != vowel_sum:
-                calculation_str += f" => {reduced_value}"
+            if consonant_letters:
+                calculation_str = f"{name}: {' + '.join(consonant_letters)} = {consonant_sum}"
+                reduced_value = reduce_to_single_digit(consonant_sum)
+                
+                if reduced_value != consonant_sum:
+                    calculation_str += f" => {reduced_value}"
+                
+                details.append(calculation_str)
+                reduced_name_totals.append(reduced_value)
+            else:
+                details.append(f"{name}: No consonants")
+        
+        total = sum(reduced_name_totals)
+        details.append(f"\nTotal: {' + '.join(map(str, reduced_name_totals))} = {total}")
+        
+        final_number = reduce_to_single_digit(total)
+        
+        if final_number != total:
+            details.append(f"Final Reduction: {total} => {final_number}")
+        
+        return final_number, "\n".join(details)
+    
+    def calculate_expression():
+        """Calculate Expression number from all letters."""
+        name_parts = full_name.strip().split()
+        reduced_name_totals = []
+        details = []
+        
+        for name in name_parts:
+            letter_sum = 0
+            letter_list = []
             
-            details.append(calculation_str)
-            reduced_name_totals.append(reduced_value)
-        else:
-            details.append(f"{name}: No vowels")
+            for char in name:
+                if char.isalpha():
+                    value = letter_values[char.upper()]
+                    letter_sum += value
+                    letter_list.append(f"{char.upper()}={value}")
+            
+            if letter_list:
+                calculation_str = f"{name}: {' + '.join(letter_list)} = {letter_sum}"
+                reduced_value = reduce_to_single_digit(letter_sum)
+                
+                if reduced_value != letter_sum:
+                    calculation_str += f" => {reduced_value}"
+                
+                details.append(calculation_str)
+                reduced_name_totals.append(reduced_value)
+            else:
+                details.append(f"{name}: No letters")
+        
+        total = sum(reduced_name_totals)
+        details.append(f"\nTotal: {' + '.join(map(str, reduced_name_totals))} = {total}")
+        
+        final_number = reduce_to_single_digit(total)
+        
+        if final_number != total:
+            details.append(f"Final Reduction: {total} => {final_number}")
+        
+        return final_number, "\n".join(details)
     
-    # Add all reduced name totals together
-    total = sum(reduced_name_totals)
-    details.append(f"\nTotal: {' + '.join(map(str, reduced_name_totals))} = {total}")
+    # Calculate all numbers
+    soul_urge_num, soul_urge_calc = calculate_soul_urge()
+    personality_num, personality_calc = calculate_personality()
+    expression_num, expression_calc = calculate_expression()
     
-    # Reduce to single digit or master number
-    final_number = reduce_to_single_digit(total)
-    
-    if final_number != total:
-        details.append(f"Final Reduction: {total} => {final_number}")
-    
-    return final_number, "\n".join(details)
+    return {
+        'soul_urge': {
+            'number': soul_urge_num,
+            'calculation': soul_urge_calc
+        },
+        'appearance': {
+            'number': personality_num,
+            'calculation': personality_calc
+        },
+        'expression': {
+            'number': expression_num,
+            'calculation': expression_calc
+        }
+    }
 
 
-# Test the function
+def display_name_group(full_name):
+    """Display all NAME GROUP calculations in a formatted way."""
+    
+    print("=" * 70)
+    print(f"NAME GROUP NUMEROLOGY CALCULATIONS")
+    print("=" * 70)
+    print(f"Name: {full_name}")
+    print("=" * 70)
+    
+    # Calculate all numbers
+    results = calculate_name_numerology(full_name)
+    
+    # Display Soul Urge
+    print("\n1. SOUL URGE (Heart's Desire)")
+    print("-" * 70)
+    print("Uses: VOWELS from full birth name")
+    print()
+    print(results['soul_urge']['calculation'])
+    print(f"\n✨ Soul Urge Number: {results['soul_urge']['number']}")
+    
+    # Display Appearance (Personality)
+    print("\n\n2. APPEARANCE (Personality)")
+    print("-" * 70)
+    print("Uses: CONSONANTS from full birth name")
+    print()
+    print(results['appearance']['calculation'])
+    print(f"\n✨ Appearance Number: {results['appearance']['number']}")
+    
+    # Display Expression (Destiny)
+    print("\n\n3. EXPRESSION (Destiny)")
+    print("-" * 70)
+    print("Uses: ALL LETTERS from full birth name")
+    print()
+    print(results['expression']['calculation'])
+    print(f"\n✨ Expression Number: {results['expression']['number']}")
+    
+    # Summary
+    print("\n\n" + "=" * 70)
+    print("SUMMARY - NAME GROUP")
+    print("=" * 70)
+    print(f"1. Soul Urge:    {results['soul_urge']['number']}")
+    print(f"2. Appearance:   {results['appearance']['number']}")
+    print(f"3. Expression:   {results['expression']['number']}")
+    print("=" * 70)
+    
+    return results
+
+
+# Main program
 if __name__ == "__main__":
-    # Example 1: Ian Dubin Aliman
-    print("Example 1: Ian Dubin Aliman")
-    print("=" * 50)
-    soul_urge, calculation = calculate_soul_urge("Ian Dubin Aliman")
-    print(calculation)
-    print(f"\nSoul Urge Number: {soul_urge}")
-    print()
-    
-    # Example 2: Thomas John Hancock
-    print("\nExample 2: Thomas John Hancock")
-    print("=" * 50)
-    soul_urge, calculation = calculate_soul_urge("Thomas John Hancock")
-    print(calculation)
-    print(f"\nSoul Urge Number: {soul_urge}")
-    print()
-    
-    # Example 3: Michael Joseph Jackson
-    print("\nExample 3: Michael Joseph Jackson")
-    print("=" * 50)
-    soul_urge, calculation = calculate_soul_urge("Michael Joseph Jackson")
-    print(calculation)
-    print(f"\nSoul Urge Number: {soul_urge}")
-    print()
-    
-    # Example 4: Mary Jane Smith
-    print("\nExample 4: Mary Jane Smith")
-    print("=" * 50)
-    soul_urge, calculation = calculate_soul_urge("Mary Jane Smith")
-    print(calculation)
-    print(f"\nSoul Urge Number: {soul_urge}")
-    print()
+    # Test example
+    print("\n*** EXAMPLE CALCULATION ***\n")
+    test_results = display_name_group("Ian Dubin Aliman")
     
     # Interactive mode
-    print("\n" + "=" * 50)
-    print("Calculate your own Soul Urge Number")
-    print("=" * 50)
+    print("\n\n\n*** CALCULATE YOUR OWN NAME GROUP ***\n")
+    
     user_name = input("Enter your full birth name: ")
-    soul_urge, calculation = calculate_soul_urge(user_name)
-    print("\nCalculation:")
-    print(calculation)
-    print(f"\n✨ Your Soul Urge Number is: {soul_urge} ✨")
+    
+    print("\n")
+    user_results = display_name_group(user_name)
 
     
